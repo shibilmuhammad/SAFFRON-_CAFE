@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saffron Cafe Promo</title>
+    <style>
+        /* --- CORE VARIABLES & RESET --- */
+        :root {
+            /* Extracted/Refined Palette */
+            --saffron-primary: #FFB300;   /* Vibrant Saffron */
+            --saffron-glow: #FFE082;      /* Lighter glow hue */
+            --deep-red: #B71C1C;          /* Deep rich red from signage */
+            --dark-bg: #050505;           /* Almost black */
+            --overlay-dark: rgba(0, 0, 0, 0.7);
+            --text-color: #ffffff;
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden; /* No scrolling */
+            font-family: var(--font-family);
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            cursor: none; /* Hide cursor for TV experience */
+        }
+
+        /* --- BACKGROUND LAYER --- */
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* 1. The Shop Image - Blurred & Darkened */
+        .bg-image {
+            background-image: url('shop_bg.jpg'); /* Relative path */
+            background-size: cover;
+            background-position: center;
+            filter: blur(15px) brightness(0.4); /* Blur & Darken */
+            transform: scale(1.1); /* Slight zoom to avoid blur edges */
+        }
+
+        /* 2. Gradient Overlay for Branding Tint */
+        .bg-gradient {
+            background: linear-gradient(135deg, 
+                rgba(183, 28, 28, 0.6) 0%, /* Red tint top-left */
+                rgba(0, 0, 0, 0.8) 50%,    /* Dark center */
+                rgba(255, 179, 0, 0.1) 100% /* Subtle Saffron tint bottom-right */
+            );
+            z-index: 1;
+        }
+
+        /* --- LAYOUT GRID --- */
+        /*
+           Using CSS Grid to place Main Content and Slogans.
+           Removed Top Bar.
+        */
+        .layout-container {
+            position: relative;
+            z-index: 10;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-rows: 1fr 15vh; /* Main Content takes most space, Bottom bar for slogans */
+            grid-template-columns: 1fr;
+            padding: 3vh 5vw;
+        }
+
+        /* --- HERO / SLIDE SECTION --- */
+        .hero-section {
+            grid-row: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .slide-frame {
+            width: 70vw; /* Occupy good central space */
+            height: 45vw; /* Maintain aspect ratio roughly or fixed */
+            max-height: 70vh; /* Increased height since logo is gone */
+            background: #000;
+            border-radius: 20px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.9);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+            
+            /* Center content inside */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Common Slide Styles */
+        .promo-slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            z-index: 1;
+        }
+        
+        .promo-slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
+
+        /* Video Slide specific */
+        video.promo-slide {
+            object-fit: cover;
+        }
+
+        /* Welcome Slide specific */
+        .welcome-slide-content {
+            background: radial-gradient(circle, rgba(60,10,10,1) 0%, rgba(0,0,0,1) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .welcome-logo {
+            width: 50%;
+            max-width: 500px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 30px var(--saffron-primary));
+            animation: pulse-logo 4s infinite ease-in-out;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-text {
+            color: var(--saffron-glow);
+            font-size: 2.5vw;
+            font-weight: 300;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease-out 0.5s; /* Delay text appearance */
+        }
+
+        .promo-slide.active .welcome-text {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes pulse-logo {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 25px var(--saffron-primary)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 45px var(--saffron-glow)); }
+        }
+
+
+        /* Placeholder Label (If video fails or offline mode without files) */
+        .video-placeholder-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 2vw;
+            background: rgba(0,0,0,0.5);
+            padding: 1rem;
+            border-radius: 10px;
+            display: none; /* Hidden if video plays */
+            z-index: 0;
+        }
+
+        /* --- SLOGAN / FOOTER --- */
+        .slogan-container {
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .slogan-text {
+            font-size: 3.5vw; /* Slightly larger */
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--saffron-primary);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            
+            /* Slide Animation logic will handle the changing text */
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .slogan-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- DECORATIVE ELEMENTS --- */
+        .highlight-line {
+            width: 15vw;
+            height: 4px;
+            background: var(--deep-red);
+            margin-top: 15px;
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--deep-red);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Background Layers -->
+    <div class="bg-layer bg-image"></div>
+    <div class="bg-layer bg-gradient"></div>
+
+    <!-- Main Layout -->
+    <div class="layout-container">
+        
+        <!-- Slide Display Area -->
+        <div class="hero-section">
+            <div class="slide-frame">
+                
+                <!-- 
+                     Mixed Slideshow:
+                     1. Welcome Slide (Div)
+                     2. Videos (Video tags)
+                -->
+
+                <!-- Slide 1: Welcome Slide -->
+                <div class="promo-slide welcome-slide-content active" data-duration="6000" data-slogan="Welcome to Saffron Cafe">
+                    <img src="logo.png" alt="Saffron Cafe Logo" class="welcome-logo">
+                    <div class="welcome-text">The Taste of Tradition</div>
+                </div>
+
+                <!-- Slide 2: Burger Video -->
+                <video class="promo-slide" muted playsinline data-duration="8000" data-slogan="Fresh Burgers 🍔" onerror="this.style.display='none'; document.querySelector('.video-placeholder-text').style.display='block';">
+                     <source src="assets/burger.mp4" type="video/mp4">
+                </video>
+                
+                <!-- Slide 3: Shawarma/Grill Video -->
+                <video class="promo-slide" muted playsinline data-duration="8000" data-slogan="Juicy Shawarmas 🌯" onerror="this.style.display='none'; document.querySelector('.video-placeholder-text').style.display='block';">
+                    <source src="assets/shawarma.mp4" type="video/mp4">
+                </video>
+
+                 <!-- Slide 4: Drink/Juice Video -->
+                <video class="promo-slide" muted playsinline data-duration="8000" data-slogan="Refreshing Juices 🥤" onerror="this.style.display='none'; document.querySelector('.video-placeholder-text').style.display='block';">
+                    <source src="assets/juice.mp4" type="video/mp4">
+                </video>
+                
+                <div class="video-placeholder-text">Saffron Cafe Delights</div>
+            </div>
+        </div>
+
+        <!-- Rotating Slogans -->
+        <div class="slogan-container">
+            <div class="slogan-text" id="sloganDisplay">Welcome to Saffron Cafe</div>
+            <div class="highlight-line"></div>
+        </div>
+
+    </div>
+
+    <script>
+        /* 
+           Refactored Logic for Mixed Slideshow with Synced Slogans
+        */
+
+        const sloganEl = document.getElementById('sloganDisplay');
+        const slides = document.querySelectorAll('.promo-slide');
+        let currentSlideIdx = 0;
+
+        // Function to update slogan with fade effect
+        function updateSlogan(text) {
+            sloganEl.classList.remove('visible');
+            setTimeout(() => {
+                sloganEl.textContent = text;
+                sloganEl.classList.add('visible');
+            }, 800); // Wait for fade out
+        }
+
+        function playNextSlide() {
+            // Get current and next
+            const currentSlide = slides[currentSlideIdx];
+            const nextIdx = (currentSlideIdx + 1) % slides.length;
+            const nextSlide = slides[nextIdx];
+            
+            // Activate Next Slide
+            nextSlide.classList.add('active');
+            currentSlide.classList.remove('active');
+
+            // Sync Slogan for Next Slide
+            const nextSlogan = nextSlide.getAttribute('data-slogan') || "Saffron Cafe";
+            updateSlogan(nextSlogan);
+
+            // Handle Video Play/Pause logic
+            if (currentSlide.tagName === 'VIDEO') {
+                setTimeout(() => currentSlide.pause(), 1000); // Stop after fade out
+                currentSlide.currentTime = 0; // Reset
+            }
+
+            if (nextSlide.tagName === 'VIDEO') {
+                 nextSlide.currentTime = 0;
+                 nextSlide.play().catch(e => console.log("Autoplay issue", e));
+            }
+
+            // Determine Duration for Next Switch
+            // Use 'data-duration' attribute or default fallback
+            let duration = parseInt(nextSlide.getAttribute('data-duration')) || 6000;
+            
+            // Scheduling next switch
+            setTimeout(playNextSlide, duration);
+            
+            // Update Index
+            currentSlideIdx = nextIdx;
+        }
+
+        // Initialize First Slide & Slogan
+        const firstSlide = slides[0];
+        const initialSlogan = firstSlide.getAttribute('data-slogan') || "Welcome to Saffron Cafe";
+        
+        // Set initial slogan immediately
+        sloganEl.textContent = initialSlogan;
+        setTimeout(() => sloganEl.classList.add('visible'), 500);
+
+        // Start video if first slide is video
+        if(firstSlide.tagName === 'VIDEO') {
+            firstSlide.play().catch(e => console.log(e));
+        }
+        
+        // Start the loop based on first slide's duration
+        let initialDuration = parseInt(firstSlide.getAttribute('data-duration')) || 6000;
+        setTimeout(playNextSlide, initialDuration);
+
+    </script>
+</body>
+</html>
+
