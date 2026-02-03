@@ -64,18 +64,25 @@
 
         /* --- LAYOUT GRID --- */
         /*
-           Using CSS Grid to place Main Content and Slogans.
-           Removed Top Bar.
+           Applying global scale of 1.2 for TV zoom issue.
+           Container size reduced to (100 / 1.2) = 83.333% to prevent overflow.
         */
         .layout-container {
             position: relative;
             z-index: 10;
-            width: 100vw;
-            height: 100vh;
+            width: 83.33vw; 
+            height: 83.33vh;
             display: grid;
-            grid-template-rows: 1fr 15vh; /* Main Content takes most space, Bottom bar for slogans */
+            grid-template-rows: 1fr 15vh;
             grid-template-columns: 1fr;
             padding: 3vh 5vw;
+            
+            /* GLOBAL ZOOM FIX */
+            transform: scale(1.2);
+            transform-origin: center center;
+            
+            /* Center the scaled container in the viewport */
+            margin: 8.33vh auto; 
         }
 
         /* --- HERO / SLIDE SECTION --- */
@@ -90,11 +97,11 @@
         }
 
         .slide-frame {
-            width: 85vw; /* Increased from 70vw */
-            height: 55vw; /* Increased aspect ratio slightly */
-            max-height: 80vh; /* Increased max-height */
+            width: 85vw; 
+            height: 55vw; 
+            max-height: 80vh; 
             background: #000;
-            border-radius: 25px; /* Slightly larger radius */
+            border-radius: 25px;
             box-shadow: 0 40px 80px rgba(0,0,0,0.9);
             border: 2px solid rgba(255, 255, 255, 0.1);
             overflow: hidden;
@@ -122,9 +129,9 @@
             opacity: 1;
             z-index: 2;
         }
-
-        /* Video Slide specific */
-        video.promo-slide {
+        
+        /* Image Slide Specific */
+        img.promo-slide {
             object-fit: cover;
         }
 
@@ -139,8 +146,8 @@
         }
 
         .welcome-logo {
-            width: 60%; /* Increased from 50% */
-            max-width: 600px; /* Increased max-width */
+            width: 60%;
+            max-width: 600px;
             height: auto;
             object-fit: contain;
             filter: drop-shadow(0 0 30px var(--saffron-primary));
@@ -150,14 +157,14 @@
 
         .welcome-text {
             color: var(--saffron-glow);
-            font-size: 3vw; /* Increased from 2.5vw */
+            font-size: 3vw;
             font-weight: 300;
             letter-spacing: 5px;
             text-transform: uppercase;
             text-shadow: 0 2px 10px rgba(0,0,0,0.8);
             opacity: 0;
             transform: translateY(20px);
-            transition: all 1s ease-out 0.5s; /* Delay text appearance */
+            transition: all 1s ease-out 0.5s;
         }
 
         .promo-slide.active .welcome-text {
@@ -168,22 +175,6 @@
         @keyframes pulse-logo {
             0%, 100% { transform: scale(1); filter: drop-shadow(0 0 25px var(--saffron-primary)); }
             50% { transform: scale(1.05); filter: drop-shadow(0 0 45px var(--saffron-glow)); }
-        }
-
-
-        /* Placeholder Label (If video fails or offline mode without files) */
-        .video-placeholder-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #fff;
-            font-size: 2.4vw; /* Increased from 2vw */
-            background: rgba(0,0,0,0.5);
-            padding: 1rem;
-            border-radius: 10px;
-            display: none; /* Hidden if video plays */
-            z-index: 0;
         }
 
         /* --- SLOGAN / FOOTER --- */
@@ -197,14 +188,13 @@
         }
 
         .slogan-text {
-            font-size: 4.2vw; /* Increased from 3.5vw */
+            font-size: 4.2vw;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: var(--saffron-primary);
             text-shadow: 0 2px 4px rgba(0,0,0,0.8);
             
-            /* Slide Animation logic will handle the changing text */
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -217,7 +207,7 @@
 
         /* --- DECORATIVE ELEMENTS --- */
         .highlight-line {
-            width: 18vw; /* Increased from 15vw */
+            width: 18vw;
             height: 4px;
             background: var(--deep-red);
             margin-top: 15px;
@@ -243,7 +233,7 @@
                 <!-- 
                      Mixed Slideshow:
                      1. Welcome Slide (Div)
-                     2. Videos (Video tags)
+                     2. Images (Img tags)
                 -->
 
                 <!-- Slide 1: Welcome Slide -->
@@ -252,22 +242,15 @@
                     <div class="welcome-text">The Taste of Tradition</div>
                 </div>
 
-                <!-- Slide 2: Burger Video -->
-                <video class="promo-slide" muted playsinline data-duration="8000" data-slogan="Fresh Burgers 🍔" onerror="this.style.display='none'; document.querySelector('.video-placeholder-text').style.display='block';">
-                     <source src="assets/burger.mp4" type="video/mp4">
-                </video>
+                <!-- Slide 2: Burger Image -->
+                <img src="assets/burger_promo.png" class="promo-slide" data-duration="6000" data-slogan="Fresh Burgers 🍔">
                 
-                <!-- Slide 3: Shawarma/Grill Video -->
-                <video class="promo-slide" muted playsinline data-duration="8000" data-slogan="Juicy Shawarmas 🌯" onerror="this.style.display='none'; document.querySelector('.video-placeholder-text').style.display='block';">
-                    <source src="assets/shawarma.mp4" type="video/mp4">
-                </video>
+                <!-- Slide 3: Shawarma Image -->
+                <img src="assets/shawarma_promo.png" class="promo-slide" data-duration="6000" data-slogan="Juicy Shawarmas 🌯">
 
-                 <!-- Slide 4: Drink/Juice Video -->
-                <video class="promo-slide" muted playsinline data-duration="8000" data-slogan="Refreshing Juices 🥤" onerror="this.style.display='none'; document.querySelector('.video-placeholder-text').style.display='block';">
-                    <source src="assets/juice.mp4" type="video/mp4">
-                </video>
+                 <!-- Slide 4: Juice Image -->
+                <img src="assets/juice_promo.png" class="promo-slide" data-duration="6000" data-slogan="Refreshing Juices 🥤">
                 
-                <div class="video-placeholder-text">Saffron Cafe Delights</div>
             </div>
         </div>
 
@@ -281,7 +264,7 @@
 
     <script>
         /* 
-           Refactored Logic for Mixed Slideshow with Synced Slogans
+           Refactored Logic for Image Slideshow with Synced Slogans
         */
 
         const sloganEl = document.getElementById('sloganDisplay');
@@ -311,17 +294,6 @@
             const nextSlogan = nextSlide.getAttribute('data-slogan') || "Saffron Cafe";
             updateSlogan(nextSlogan);
 
-            // Handle Video Play/Pause logic
-            if (currentSlide.tagName === 'VIDEO') {
-                setTimeout(() => currentSlide.pause(), 1000); // Stop after fade out
-                currentSlide.currentTime = 0; // Reset
-            }
-
-            if (nextSlide.tagName === 'VIDEO') {
-                 nextSlide.currentTime = 0;
-                 nextSlide.play().catch(e => console.log("Autoplay issue", e));
-            }
-
             // Determine Duration for Next Switch
             // Use 'data-duration' attribute or default fallback
             let duration = parseInt(nextSlide.getAttribute('data-duration')) || 6000;
@@ -341,11 +313,6 @@
         sloganEl.textContent = initialSlogan;
         setTimeout(() => sloganEl.classList.add('visible'), 500);
 
-        // Start video if first slide is video
-        if(firstSlide.tagName === 'VIDEO') {
-            firstSlide.play().catch(e => console.log(e));
-        }
-        
         // Start the loop based on first slide's duration
         let initialDuration = parseInt(firstSlide.getAttribute('data-duration')) || 6000;
         setTimeout(playNextSlide, initialDuration);
